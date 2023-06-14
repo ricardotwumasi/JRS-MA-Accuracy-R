@@ -52,16 +52,18 @@ l.predicted[1:2] ~ dmnorm(mu[],T[,])
 Predicted_Se <- 1/(1+exp(-l.predicted[1]))
 Predicted_Sp <- 1/(1+exp(-l.predicted[2]))
 }
+
 "
 
 writeLines(modelString,con="model.txt")
 
 
-# Data for the anti-CCP example
-TP=c(115, 110, 40, 23, 236, 74, 89, 90, 31, 69, 25, 43, 70, 167, 26, 110, 26, 64, 71, 68, 38, 42, 149, 147, 47, 24, 40, 171, 72, 7, 481, 190, 82, 865, 139, 69, 90) 
-FP=c(17, 24, 5, 0, 20, 11, 4, 2, 0, 8, 2, 1, 5, 8, 8, 3, 1, 14, 2, 14, 3, 2, 7, 10, 7, 3, 11, 26, 14, 2, 23, 12, 13, 79, 7, 5, 7) 
-FN=c(16, 86, 58, 7, 88, 8, 29, 50, 22, 18, 10, 63, 17, 98, 15, 148, 20, 15, 58, 35, 0, 60, 109, 35, 20, 18, 46, 60, 77, 9, 68, 105, 71, 252, 101, 107, 101) 
-TN=c(73, 215, 227, 39, 231, 130, 142, 129, 75, 38, 40, 120, 228, 88, 15, 118, 56, 293, 66, 132, 73, 96, 114, 106, 375, 79, 146, 443, 298, 51, 185, 408, 301, 2218, 464, 133, 313) 
+# Data 
+
+TP=c(21, 10, 1395, 127, 494)
+FP=c(0, 3, 8, 54, 6)
+FN=c(4, 6, 0, 21, 6)
+TN=c(0, 46, 36, 13, 494)
 pos=TP + FN
 neg=TN + FP 
 
@@ -80,7 +82,7 @@ parameters = c( "Summary_Se" , "Summary_Sp", "prec", "mu", "tau", "tau.sq", "rho
 output = coda.samples(jagsModel,variable.names=parameters,n.iter=10000)
 
 # Plots for evaluating convergence
-tiff("Figure_11_3.tiff",width = 23, height = 23, units = "cm", res=600)
+png("Convergence.png",width = 23, height = 23, units = "cm", res=600)
 par(oma=c(0,0,3,0))
 layout(matrix(c(1,2,3,3), 2, 2, byrow = TRUE))
 denplot(output, parms=c("Summary_Se"), auto.layout=FALSE, main="(a)", xlab="Summary_Se", ylab="Density")
@@ -104,4 +106,8 @@ denplot(output, parms=c("Summary_Se","Summary_Sp"))
 
 # SROC plot
 SROC_rjags(X=output, model="Bivariate",n=n, study_col1="blue", study_col2=rgb(0, 0, 1, 0.15), dataset=cbind(TP,FP,FN,TN), ref_std=FALSE,SROC_curve = F)
+
+
+
+
 
